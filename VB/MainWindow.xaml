@@ -1,0 +1,34 @@
+﻿<Window x:Class="WpfApplication147.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="MainWindow" Height="350"
+        Width="525" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxet="http://schemas.devexpress.com/winfx/2008/xaml/editors/themekeys"
+        xmlns:local="clr-namespace:WpfApplication147">
+    <Window.Resources>
+        <ResourceDictionary>
+            <local:ErrorContentConverter x:Key="ErrorContentToErrorTypeConverter" GetValueTag="ErrorType" Separator=";"/>
+            <local:ErrorContentConverter x:Key="ErrorContentConverter" GetValueTag="ErrorContent" Separator=";"/>
+            <Style TargetType="{x:Type dxe:ErrorControl}" BasedOn="{StaticResource {x:Type dxe:ErrorControl}}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Critical">
+                        <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Critical}}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Information">
+                        <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Information}}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Window.DataContext>
+        <local:TestClass TestString="test"/>
+    </Window.DataContext>
+    
+    <StackPanel>
+        <dxe:TextEdit EditValue="{Binding Path=TestString, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+            <dxe:TextEdit.ErrorToolTipContentTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=ErrorContent, Converter={StaticResource ErrorContentConverter}}" />
+                </DataTemplate>
+            </dxe:TextEdit.ErrorToolTipContentTemplate>
+        </dxe:TextEdit>
+    </StackPanel>
+</Window>
