@@ -7,11 +7,74 @@
 
 # WPF Editors - Indicate Errors and Warnings by Implementing IDataErrorInfo
 
-Please implement the `IDataErrorInfo` interface on the data object. Then, pass the text and type of error in the `IDataErrorInfo.Error` property ( it is possible to easily parse this string). Implement a custom style for the `ErrorControl`. This element presents the error icon. Modify the `ErrorControl` style in such a way as to take into account a custom error type and text (use the converter).
+This example validates the input field and displays error indicators in DevExpress editors. The solution implements the standard `IDataErrorInfo` interface and uses a custom `ErrorControl` style to display different icons and messages for errors, warnings, and informational notes.
+
+Users can see visual indicators (error, warning, information) directly in the editor. Each indicator includes a descriptive message that helps users quickly fix input mistakes.
+
+GIF
 
 ## Implementation Details
 
-...
+### Create Validation Logic
+
+The data object implements the `IDataErrorInfo` interface. The `Error` property returns a formatted string that includes the error type and message:
+
+```csharp
+public class TestClass : IDataErrorInfo {
+    public string TestString { get; set; }
+
+    string IDataErrorInfo.Error {
+        get { return GetError(); }
+    }
+
+    string GetError() {
+        if (string.IsNullOrEmpty(TestString))
+            return "ErrorType=Critical;ErrorContent=The value is not provided. Please enter a value";
+        if (TestString.Length < 3)
+            return "ErrorType=Warning;ErrorContent=The value is less than 3 characters. Please enter at least 5 characters";
+        if (TestString.Length < 5)
+            return "ErrorType=Information;ErrorContent=The value is less than 5 characters. Please enter at least 5 characters";
+        return string.Empty;
+    }
+
+    string IDataErrorInfo.this[string columnName] {
+        get {
+            if (columnName == "TestString")
+                return GetError();
+            return string.Empty;
+        }
+    }
+}
+```
+
+### Parse Error Content
+
+The error string encodes multiple values (`ErrorType` and `ErrorContent`). A value converter extracts the required part of the string that displays it in the UI:
+
+```csharp
+public class ErrorContentConverter : IValueConverter {
+    public string GetValueTag { get; set; }
+    public string Separator { get; set; }
+
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+        if (value == null || !(value is string))
+            return value;
+        string error = System.Convert.ToString(value, culture);
+        if (string.IsNullOrEmpty(error))
+            return value;
+
+        string searchString = GetValueTag + "=";
+        foreach (string suberror in error.Split(new string[] { Separator }, StringSplitOptions.RemoveEmptyEntries)) {
+            if (suberror.Contains(searchString))
+                return suberror.Replace(searchString, string.Empty);
+        }
+        return value;
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+        return null;
+    }
+}
+```
 
 ## Files to Review
 
