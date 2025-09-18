@@ -51,15 +51,17 @@ namespace WpfApplication147 {
         string IDataErrorInfo.Error {
             get { return GetError(); }
         }
+
         string GetError() {
             if (string.IsNullOrEmpty(TestString))
-                return "ErrorType=Critical;ErrorContent=empty";
+                return "ErrorType=Critical;ErrorContent=The value is not provided. Please enter a value";
             if (TestString.Length < 3)
-                return "ErrorType=Critical;ErrorContent=error";
+                return "ErrorType=Warning;ErrorContent=The value is less than 3 characters. Please enter at least 5 characters";
             if (TestString.Length < 5)
-                return "ErrorType=Information;ErrorContent=warning";
+                return "ErrorType=Information;ErrorContent=The value is less than 5 characters. Please enter at least 5 characters";
             return string.Empty;
         }
+
         string IDataErrorInfo.this[string columnName] {
             get {
                 if (columnName == "TestString")

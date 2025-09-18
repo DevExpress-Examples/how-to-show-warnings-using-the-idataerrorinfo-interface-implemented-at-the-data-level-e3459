@@ -10,6 +10,9 @@
                     <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Critical">
                         <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Critical}}" />
                     </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Warning">
+                        <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Warning}}" />
+                    </DataTrigger>
                     <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Information">
                         <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Information}}" />
                     </DataTrigger>
