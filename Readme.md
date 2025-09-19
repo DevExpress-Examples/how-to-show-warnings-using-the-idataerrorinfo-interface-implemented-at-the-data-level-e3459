@@ -11,7 +11,7 @@ This example validates the input field and displays error indicators in DevExpre
 
 Users can see visual indicators (error, warning, information) directly in the editor. Each indicator includes a descriptive message that helps users quickly fix input mistakes.
 
-GIF
+![Indicate Errors and Warnings by Implementing IDataErrorInfo](./Images/validation.jpg)
 
 ## Implementation Details
 
@@ -74,6 +74,46 @@ public class ErrorContentConverter : IValueConverter {
         return null;
     }
 }
+```
+
+### Apply Two Converter Modes
+
+The converter works in **Type** and **Content** modes. You can extract the `ErrorType` or the `ErrorContent` from the `IDataErrorInfo.Error` string:
+
+* **Type** mode drives an implicit `ErrorControl` style that picks the appropriate icon (Critical/Warning/Information).
+* **Content** mode feeds a custom tooltip that displays the error message next to the editor.
+
+```xaml
+<Window.Resources>
+    <ResourceDictionary>
+        <local:ErrorContentConverter x:Key="ErrorContentToErrorTypeConverter" GetValueTag="ErrorType" Separator=";"/>
+        <local:ErrorContentConverter x:Key="ErrorContentConverter" GetValueTag="ErrorContent" Separator=";"/>
+
+        <Style TargetType="{x:Type dxe:ErrorControl}" BasedOn="{StaticResource {x:Type dxe:ErrorControl}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Critical">
+                    <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Critical}}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Warning">
+                    <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Warning}}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Information">
+                    <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Information}}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ResourceDictionary>
+</Window.Resources>
+
+<StackPanel>
+    <dxe:TextEdit EditValue="{Binding Path=TestString, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+        <dxe:TextEdit.ErrorToolTipContentTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding Path=ErrorContent, Converter={StaticResource ErrorContentConverter}}" />
+            </DataTemplate>
+        </dxe:TextEdit.ErrorToolTipContentTemplate>
+    </dxe:TextEdit>
+</StackPanel>
 ```
 
 ## Files to Review
