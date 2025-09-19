@@ -7,9 +7,7 @@
 
 # WPF Editors - Indicate Errors and Warnings by Implementing IDataErrorInfo
 
-This example validates the input field and displays error indicators in DevExpress editors. The solution implements the standard `IDataErrorInfo` interface and uses a custom `ErrorControl` style to display different icons and messages for errors, warnings, and informational notes.
-
-Users can see visual indicators (error, warning, information) directly in the editor. Each indicator includes a descriptive message that helps users quickly fix input mistakes.
+This example validates input in a WPF [`TextEdit`](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.TextEdit) and displays a warning if validation fails. It implements the standard `IDataErrorInfo` interface and applies a custom `ErrorControl` style to display icons (error, warning, information) along with descriptive messages to help users quickly correct input errors.
 
 ![Indicate Errors and Warnings by Implementing IDataErrorInfo](./Images/validation.jpg)
 
