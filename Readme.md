@@ -7,7 +7,8 @@
 
 # WPF Editors - Indicate Errors and Warnings by Implementing IDataErrorInfo
 
-This example validates input in a WPF [`TextEdit`](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.TextEdit) and displays a warning if validation fails. It implements the standard `IDataErrorInfo` interface and applies a custom `ErrorControl` style to display icons (error, warning, information) along with descriptive messages to help users quickly correct input errors.
+This example validates input in a WPF [`TextEdit`](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.TextEdit) and displays a warning if validation fails. It implements the standard `IDataErrorInfo` interface and applies a custom `ErrorControl` style to display icons (error, warning, information) along with descriptive messages to help users correct input errors.
+
 
 ![Indicate Errors and Warnings by Implementing IDataErrorInfo](./Images/validation.jpg)
 
@@ -47,7 +48,8 @@ public class TestClass : IDataErrorInfo {
 
 ### Parse Error Content
 
-The error string encodes multiple values (`ErrorType` and `ErrorContent`). A value converter extracts the required part of the string that displays it in the UI:
+The error string encodes multiple values (`ErrorType` and `ErrorContent`). A value converter extracts these parts and displays them in the UI:
+
 
 ```csharp
 public class ErrorContentConverter : IValueConverter {
