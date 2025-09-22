@@ -4,20 +4,136 @@
 [![](https://img.shields.io/badge/📖_How_to_use_DevExpress_Examples-e9f6fc?style=flat-square)](https://docs.devexpress.com/GeneralInformation/403183)
 [![](https://img.shields.io/badge/💬_Leave_Feedback-feecdd?style=flat-square)](#does-this-example-address-your-development-requirementsobjectives)
 <!-- default badges end -->
-<!-- default file list -->
-*Files to look at*:
+
+# WPF Editors - Indicate Errors and Warnings by Implementing IDataErrorInfo
+
+This example validates input in a WPF [`TextEdit`](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.TextEdit) and displays a warning if validation fails. It implements the standard `IDataErrorInfo` interface and applies a custom `ErrorControl` style to display icons (error, warning, information) along with descriptive messages to help users correct input errors.
+
+
+![Indicate Errors and Warnings by Implementing IDataErrorInfo](./Images/validation.jpg)
+
+## Implementation Details
+
+### Create Validation Logic
+
+The data object implements the `IDataErrorInfo` interface. The `Error` property returns a formatted string that includes the error type and message:
+
+```csharp
+public class TestClass : IDataErrorInfo {
+    public string TestString { get; set; }
+
+    string IDataErrorInfo.Error {
+        get { return GetError(); }
+    }
+
+    string GetError() {
+        if (string.IsNullOrEmpty(TestString))
+            return "ErrorType=Critical;ErrorContent=The value is not provided. Please enter a value";
+        if (TestString.Length < 3)
+            return "ErrorType=Warning;ErrorContent=The value is less than 3 characters. Please enter at least 5 characters";
+        if (TestString.Length < 5)
+            return "ErrorType=Information;ErrorContent=The value is less than 5 characters. Please enter at least 5 characters";
+        return string.Empty;
+    }
+
+    string IDataErrorInfo.this[string columnName] {
+        get {
+            if (columnName == "TestString")
+                return GetError();
+            return string.Empty;
+        }
+    }
+}
+```
+
+### Parse Error Content
+
+The error string encodes multiple values (`ErrorType` and `ErrorContent`). A value converter extracts these parts and displays them in the UI:
+
+
+```csharp
+public class ErrorContentConverter : IValueConverter {
+    public string GetValueTag { get; set; }
+    public string Separator { get; set; }
+
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+        if (value == null || !(value is string))
+            return value;
+        string error = System.Convert.ToString(value, culture);
+        if (string.IsNullOrEmpty(error))
+            return value;
+
+        string searchString = GetValueTag + "=";
+        foreach (string suberror in error.Split(new string[] { Separator }, StringSplitOptions.RemoveEmptyEntries)) {
+            if (suberror.Contains(searchString))
+                return suberror.Replace(searchString, string.Empty);
+        }
+        return value;
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) {
+        return null;
+    }
+}
+```
+
+### Apply Two Converter Modes
+
+The converter works in **Type** and **Content** modes. You can extract the `ErrorType` or the `ErrorContent` from the `IDataErrorInfo.Error` string:
+
+* **Type** mode drives an implicit `ErrorControl` style that picks the appropriate icon (Critical/Warning/Information).
+* **Content** mode feeds a custom tooltip that displays the error message next to the editor.
+
+```xaml
+<Window.Resources>
+    <ResourceDictionary>
+        <local:ErrorContentConverter x:Key="ErrorContentToErrorTypeConverter" GetValueTag="ErrorType" Separator=";"/>
+        <local:ErrorContentConverter x:Key="ErrorContentConverter" GetValueTag="ErrorContent" Separator=";"/>
+
+        <Style TargetType="{x:Type dxe:ErrorControl}" BasedOn="{StaticResource {x:Type dxe:ErrorControl}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Critical">
+                    <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Critical}}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Warning">
+                    <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Warning}}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Content.ErrorContent, RelativeSource={RelativeSource Self}, Converter={StaticResource ErrorContentToErrorTypeConverter}}" Value="Information">
+                    <Setter Property="ContentTemplate" Value="{DynamicResource {dxet:ErrorTypesThemeKeyExtension ResourceKey=Information}}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ResourceDictionary>
+</Window.Resources>
+
+<StackPanel>
+    <dxe:TextEdit EditValue="{Binding Path=TestString, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+        <dxe:TextEdit.ErrorToolTipContentTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding Path=ErrorContent, Converter={StaticResource ErrorContentConverter}}" />
+            </DataTemplate>
+        </dxe:TextEdit.ErrorToolTipContentTemplate>
+    </dxe:TextEdit>
+</StackPanel>
+```
+
+## Files to Review
 
 * [MainWindow.xaml](./CS/MainWindow.xaml) (VB: [MainWindow.xaml](./VB/MainWindow.xaml))
 * [MainWindow.xaml.cs](./CS/MainWindow.xaml.cs) (VB: [MainWindow.xaml.vb](./VB/MainWindow.xaml.vb))
-<!-- default file list end -->
-# WPF Editors - Indicate errors and warnings by implementing IDataErrorInfo
 
+## Documentation
 
-<p>Please implement the IDataErrorInfo interface on the data object. Then, pass the text and type of error in the IDataErrorInfo.Error property ( it is possible to easily parse this string). Implement a custom style for the ErrorControl. This element presents the error icon. Modify the ErrorControl style in such a way as to take into account a custom error type and text (use the converter).</p><p><br />
-</p>
+* [TextEdit](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.TextEdit)
+* [EditValue](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.BaseEdit.EditValue)
+* [ErrorToolTipContentTemplate](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.BaseEdit.ErrorToolTipContentTemplate)
+* [ErrorContent](https://docs.devexpress.com/WPF/DevExpress.Xpf.Editors.Validation.BaseValidationError.ErrorContent)
 
-<br/>
+## More Examples
 
+* [WPF Data Editors - Create a Registration Form](https://github.com/DevExpress-Examples/wpf-data-editors-create-registration-form)
+* [WPF Data Editors - Allow Users to Enter Only Positive Numbers](https://github.com/DevExpress-Examples/wpf-editors-prevent-negative-values)
+* [WPF Data Grid - Use Custom Editors to Edit Cell Values](https://github.com/DevExpress-Examples/wpf-data-grid-use-custom-editors-to-edit-cell-values)
+* [WPF Data Grid - How to Validate Cell Editors](https://github.com/DevExpress-Examples/wpf-data-grid-validate-cell-editors)
 
 <!-- feedback -->
 ## Does this example address your development requirements/objectives?
