@@ -49,9 +49,9 @@ Namespace WpfApplication147
         End Property
 
         Private Function GetError() As String
-            If String.IsNullOrEmpty(TestString) Then Return "ErrorType=Critical;ErrorContent=empty"
-            If TestString.Length < 3 Then Return "ErrorType=Critical;ErrorContent=error"
-            If TestString.Length < 5 Then Return "ErrorType=Information;ErrorContent=warning"
+            If String.IsNullOrEmpty(TestString) Then Return "ErrorType=Critical;ErrorContent=The value is not provided. Please enter a value"
+            If TestString.Length < 3 Then Return "ErrorType=Warning;ErrorContent=The value is less than 3 characters. Please enter at least 5 characters"
+            If TestString.Length < 5 Then Return "ErrorType=Information;ErrorContent=The value is less than 5 characters. Please enter at least 5 characters"
             Return String.Empty
         End Function
 
