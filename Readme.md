@@ -136,7 +136,7 @@ The converter works in **Type** and **Content** modes. You can extract the `Erro
 * [WPF Data Grid - How to Validate Cell Editors](https://github.com/DevExpress-Examples/wpf-data-grid-validate-cell-editors)
 
 <!-- feedback -->
-## Does this example address your development requirements/objectives?
+## Does This Example Address Your Development Requirements/Objectives?
 
 [<img src="https://www.devexpress.com/support/examples/i/yes-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=wpf-editors-validate-user-input-indicate-errors-idataerrorinfo&~~~was_helpful=yes) [<img src="https://www.devexpress.com/support/examples/i/no-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=wpf-editors-validate-user-input-indicate-errors-idataerrorinfo&~~~was_helpful=no)
 
